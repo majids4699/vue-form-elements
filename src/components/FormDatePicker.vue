@@ -1,7 +1,7 @@
 <template>
   <div class="form-group position-relative">
     <label v-uni-for="name">{{label}}</label>
-    <date-picker
+    <custom-date-picker
       v-model="date"
       :config="config"
       :disabled="disabled"
