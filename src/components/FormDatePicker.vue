@@ -21,7 +21,6 @@
 import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
-import datePicker from 'vue-bootstrap-datetimepicker';
 import VuePersianDatetimePicker from 'vue-persian-datetime-picker';
 import moment from 'moment-timezone';
 import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
