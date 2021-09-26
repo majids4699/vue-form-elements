@@ -7,8 +7,12 @@
       :disabled="disabled"
       :placeholder="placeholder"
       :data-test="dataTest"
+      :type="dataFormat"
+      :min="config.minDate"
+      :max="config.maxDate"
       :aria-label="$attrs['aria-label']"
       :tabindex="$attrs['tabindex']"
+      @change="setValue($event)"
     />
     <div v-if="errors.length > 0" class="invalid-feedback d-block">
       <div v-for="(error, index) in errors" :key="index">{{error}}</div>
@@ -22,6 +26,7 @@ import { createUniqIdsMixin } from 'vue-uniq-ids';
 import ValidationMixin from './mixins/validation';
 import DataFormatMixin from "./mixins/DataFormat";
 import VuePersianDatetimePicker from 'vue-persian-datetime-picker';
+import * as jMoment from 'moment-jalaali';
 import moment from 'moment-timezone';
 import { getLang, getUserDateFormat, getUserDateTimeFormat } from '../dateUtils';
 import Mustache from 'mustache';
@@ -29,6 +34,7 @@ let Validator = require('validatorjs');
 
 const uniqIdsMixin = createUniqIdsMixin();
 const checkFormats = ['YYYY-MM-DD', moment.ISO_8601];
+const jalaaliFormat = 'YYYY/MM/DD';
 
 Validator.register('date_or_mustache', function(value, requirement, attribute) {
   let rendered = null;
@@ -156,8 +162,12 @@ export default {
     },
   },
   methods: {
+    setValue(event) {
+      const m = new Date(event.format('YYYY-MM-DD HH:mm'));
+      this.date = moment(m.toISOString(), checkFormats).toDate();
+    },
     parseDate(val) {
-      let date = false;
+      let date = '';
 
       if (typeof val === 'string' && val !== '') {
 
@@ -166,13 +176,18 @@ export default {
         } catch (error) {
           date = val;
         }
-
-        date = moment(date, checkFormats, true);
-        if (!date.isValid()) {
-          date = false;
+        date = jMoment(date);
+        if (date) {
+          if (!date.isValid()) {
+            date = '';
+          } else {
+            date = date.format(jalaaliFormat);
+          }
+        } else {
+          date = '';
         }
       }
-
+      console.log('return:', date);
       return date;
     },
     isDateAndValueTheSame() {
@@ -198,11 +213,3 @@ export default {
   },
 };
 </script>
-
-<style>
-  @import '~pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
-
-  .inspector-container .bootstrap-datetimepicker-widget.dropdown-menu {
-    font-size: 11px;
-  }
-</style>
